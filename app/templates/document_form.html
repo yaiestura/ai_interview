@@ -1,0 +1,33 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+      <h1>Upload a document</h1>
+      <hr>
+
+      <form action="/upload_resume" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+          <label>Select file</label>
+          <div class="file is-info">
+            <input type="file" name="file" id="file" oninput="filesize(this);">
+          </div>
+        </div>
+
+        <button type="submit" class="button is-info">Upload</button>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/file_upload.js') }}"></script>
+
+

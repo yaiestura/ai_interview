@@ -1,0 +1,123 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+<div class="container" style="margin-top: 20px;">
+	<section class="hero is-primary is-bold" style="border-radius: 10px;">
+		<div class="hero-body">
+			<div class="container">
+				<h1 class="title">
+                    <i class="fas fa-sign-in-alt"></i>&nbsp;Sign Up
+				</h1>
+				<h2 class="subtitle">
+					Primary subtitle
+				</h2>
+			</div>
+		</div>
+	</section>
+
+	<div class="container column is-half box" style="margin-top: 20px;">
+		<form method="post" action="" style="margin-top: 30px;">
+		    <div class="field">
+				{{ form.uname.label(class="label") }}
+				<p class="control has-icons-left">
+					{% if form.uname.errors %}
+                        {{ form.uname(class="input is-danger", type="username", placeholder="Enter your username...") }}
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <ul class="help is-danger">
+                            {% for error in form.uname.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+					{% else %}
+                        {{ form.uname(class="input", type="username", placeholder="Enter your username...") }}
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-user"></i>
+                        </span>
+					{% endif %}
+				</p>
+            </div>
+			<div class="field">
+                {{ form.email.label(class="label") }}
+                <p class="control has-icons-left has-icons-right">
+					{% if form.email.errors %}
+							{{ form.email(class="input is-danger", type="email", placeholder="Enter your email...") }}
+							<span class="icon is-small is-left">
+						    <i class="fas fa-envelope"></i>
+							</span>
+							<span class="icon is-small is-right">
+								<i class="fas fa-check"></i>
+							</span>
+                            <ul class="help is-danger">
+                                {% for error in form.email.errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+					{% else %}
+							{{ form.email(class="input", type="email", placeholder="Enter your email...") }}
+							<span class="icon is-small is-left">
+						    <i class="fas fa-envelope"></i>
+							</span>
+							<span class="icon is-small is-right">
+								<i class="fas fa-check"></i>
+							</span>
+					{% endif %}
+				</p>
+			</div>
+            <div class="field">
+				{{ form.password.label(class="label") }}
+				<p class="control has-icons-left">
+					{% if form.password.errors %}
+                        {{ form.password(class="input is-danger", type="password", placeholder="Enter your password...") }}
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <ul class="help is-danger">
+                            {% for error in form.password.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+					{% else %}
+                        {{ form.password(class="input", type="password", placeholder="Enter your password...") }}
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-lock"></i>
+                        </span>
+					{% endif %}
+				</p>
+            </div>
+            <div class="field">
+				{{ form.confirm.label(class="label") }}
+				<p class="control has-icons-left">
+					{% if form.confirm.errors %}
+                        {{ form.confirm(class="input is-danger", type="confirm", placeholder="Enter your password again...") }}
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <ul class="help is-danger">
+                            {% for error in form.confirm.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+					{% else %}
+                        {{ form.confirm(class="input", type="password", placeholder="Enter your password again...") }}
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-lock"></i>
+                        </span>
+					{% endif %}
+				</p>
+            </div>
+			<div class="field has-text-centered">
+                {{ form.submit(class="button is-primary is-medium") }}
+            </div>
+        </form>
+        <div class="has-text-centered">
+            <a href="{{ url_for('loginpage') }}" class="is-link">
+                <small>Already have an account?</small>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

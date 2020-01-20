@@ -1,0 +1,134 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/admin.css') }}"><link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
+<script type="text/javascript" src="{{ url_for('static', filename='js/file_upload.js') }}"></script>
+
+{% extends 'index.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="columns">
+            <div class="column is-3 ">
+                <aside class="menu is-hidden-mobile">
+                    <p class="menu-label">
+                        General
+                    </p>
+                    <ul class="menu-list">
+                        <li>
+                          <a href="{{ url_for('dashboard') }}">
+                            Dashboard
+                          </a>
+                        </li>
+                        <li><a>Download report</a></li>
+                        <li>
+                            <a>Assessment</a>
+                            <ul>
+                                <li><a>Statistics</a></li>
+                                <li><a>Resume</a></li>
+                                <li><a>Motivational Letter</a></li>
+                                <li><a>VideoInterview</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="menu-label">
+                        Uploads
+                    </p>
+                    <ul class="menu-list">
+                        <li>
+                            <a>My Uploads</a>
+                            <ul>
+                                <li>
+                                  <a href="{{ url_for('upload_resume') }}">
+                                    Upload a Resume
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('upload_letter') }}">
+                                    Upload a Cover Letter
+                                  </a>
+                                </li>
+                                <li>
+                                  <a  href="{{ url_for('upload_video') }}">
+                                    Upload a Video
+                                  </a>
+                                </li>
+                                <li>
+                                  <a class="is-active" href="{{ url_for('upload_audio') }}">
+                                    Upload an Audio
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('record_video') }}">
+                                    Record a Video
+                                  </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a>Invitations</a></li>
+                    </ul>
+                    <p class="menu-label">
+                        Miscellaneous
+                    </p>
+                    <ul class="menu-list">
+                        <li><a>Open in Telegram</a></li>
+                    </ul>
+                </aside>
+            </div>
+            <div class="column is-9">
+                <nav class="breadcrumb" aria-label="breadcrumbs">
+                    <ul>
+                        <li>
+                            <a href="/">
+                                <span class="icon is-small">
+                                    <i class="fas fa-home" aria-hidden="true"></i>
+                                </span>
+                                AI Interview Tool
+                            </a>
+                        </li>
+                        <li class="is-active">
+                            <a href="/" aria-current="page">
+                                <span class="icon is-small">
+                                    <i class="fas fa-envelope-open-text" aria-hidden="true"></i>
+                                </span>
+                                Upload an Audio
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <section class="hero is-info welcome is-small">
+                    <div class="hero-body">
+                        <div class="container">
+                            <h1 class="title">
+                                Hello, {{ current_user.uname }}.
+                            </h1>
+                            <h2 class="subtitle">
+                                I hope you are having a great day!
+                            </h2>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+                <section>
+                    <form action="/upload_audio" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>Select an audio file</label>
+                            <div class="file is-info">
+                                <input type="file" name="file" id="file" oninput="filesize(this);">
+                            </div>
+                        </div>
+                        <button type="submit" class="button is-info">Upload</button>
+                    </form>
+                </section>
+                <center>
+                    <div class="column">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="column is-half notification is-{{ category }}" role="alert" style="opacity: 0.8"><strong>{{ message }}</strong></div>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </center>
+            </div>
+        </div>
+{% endblock %}
