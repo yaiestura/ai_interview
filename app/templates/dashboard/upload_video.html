@@ -23,8 +23,16 @@
                             <a>Assessment</a>
                             <ul>
                                 <li><a>Statistics</a></li>
-                                <li><a>Resume</a></li>
-                                <li><a>Motivational Letter</a></li>
+                                <li>
+                                    <a href="{{ url_for('resume_analysis') }}">
+                                      Resume
+                                    </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('letter_analysis') }}">
+                                    Motivational Letter
+                                  </a>
+                                </li>
                                 <li><a>VideoInterview</a></li>
                             </ul>
                         </li>
@@ -34,7 +42,9 @@
                     </p>
                     <ul class="menu-list">
                         <li>
-                            <a>My Uploads</a>
+                            <a href="{{ url_for('uploads') }}">
+                                My Uploads
+                            </a>
                             <ul>
                                 <li>
                                   <a href="{{ url_for('upload_resume') }}">
@@ -108,13 +118,15 @@
                 <hr>
                 <section>
                     <form action="/upload_video" method="POST" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label>Select video</label>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <h1 class="is-size-5" style="margin-bottom: 20px;">Select a Video file</h1>
                             <div class="file is-info">
                                 <input type="file" name="file" id="file" oninput="filesize(this);">
                             </div>
                         </div>
-                        <button type="submit" class="button is-info">Upload</button>
+                        <button type="submit" class="button is-info" data-tooltip="Upload Your Video">
+                            Upload
+                        </button>
                     </form>
                 </section>
                 <center>

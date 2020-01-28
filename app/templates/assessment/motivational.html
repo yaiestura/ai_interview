@@ -1,0 +1,263 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/admin.css') }}">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/bulma-accordion.min.css') }}">
+<script type="text/javascript" src="{{ url_for('static', filename='js/bulma-accordion.min.js') }}"></script>
+
+{% extends 'index.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="columns">
+            <div class="column is-3 ">
+                <aside class="menu is-hidden-mobile">
+                    <p class="menu-label">
+                        General
+                    </p>
+                    <ul class="menu-list">
+                        <li>
+                          <a href="{{ url_for('dashboard') }}">
+                            Dashboard
+                          </a>
+                        </li>
+                        <li><a>Download report</a></li>
+                        <li>
+                            <a>Assessment</a>
+                            <ul>
+                                <li><a>Statistics</a></li>
+                                <li>
+                                    <a href="{{ url_for('resume_analysis') }}">
+                                      Resume
+                                    </a>
+                                </li>
+                                <li>
+                                  <a class="is-active" href="{{ url_for('letter_analysis') }}">
+                                    Motivational Letter
+                                  </a>
+                                </li>
+                                <li><a>VideoInterview</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="menu-label">
+                        Uploads
+                    </p>
+                    <ul class="menu-list">
+                        <li>
+                            <a href="{{ url_for('uploads') }}">
+                                My Uploads
+                            </a>
+                            <ul>
+                                <li>
+                                  <a href="{{ url_for('upload_resume') }}">
+                                    Upload a Resume
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('upload_letter') }}">
+                                    Upload a Cover Letter
+                                  </a>
+                                </li>
+                                <li>
+                                  <a  href="{{ url_for('upload_video') }}">
+                                    Upload a Video
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('upload_audio') }}">
+                                    Upload an Audio
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('record_video') }}">
+                                    Record a Video
+                                  </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a>Invitations</a></li>
+                    </ul>
+                    <p class="menu-label">
+                        Miscellaneous
+                    </p>
+                    <ul class="menu-list">
+                        <li><a>Open in Telegram</a></li>
+                    </ul>
+                </aside>
+            </div>
+            <div class="column is-9">
+                <nav class="breadcrumb" aria-label="breadcrumbs">
+                    <ul>
+                        <li>
+                            <a href="/">
+                                <span class="icon is-small">
+                                    <i class="fas fa-home" aria-hidden="true"></i>
+                                </span>
+                                AI Interview Tool
+                            </a>
+                        </li>
+                        <li class="is-active">
+                            <a href="/" aria-current="page">
+                                <span class="icon is-small">
+                                    <i class="fas fa-envelope-open-text" aria-hidden="true"></i>
+                                </span>
+                                Motivational Letter Analysis
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <section class="hero is-info welcome is-small">
+                    <div class="hero-body">
+                        <div class="container">
+                            <h1 class="title">
+                                Hello, {{ current_user.uname }}.
+                            </h1>
+                            <h2 class="subtitle">
+                                I hope you are having a great day!
+                            </h2>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+                {% if text_data and sentiment_data %}
+                    <section class="info-tiles">
+                        <h1 class="is-size-5" style="margin-bottom: 20px;">Motivational Letter NLP Analysis</h1>
+                        <div class="tile is-ancestor has-text-centered">
+                            <div class="tile is-parent">
+                                <article class="tile is-child box">
+                                    <p class="title">{{ text_data['Reading time'] }}</p>
+                                    <p class="subtitle">Text<br>Reading Time</p>
+                                </article>
+                            </div>
+                            <div class="tile is-parent">
+                                <article class="tile is-child box">
+                                    <p class="title">{{ text_data['Words'] }}</p>
+                                    <p class="subtitle">Total<br>Words</p>
+                                </article>
+                            </div>
+                            <div class="tile is-parent">
+                                <article
+                                    data-tooltip="The text is easily understood by an {{ text_data['Dale Chall Readability Score'] }}"
+                                    class="tile is-child box">
+                                    <p class="title">{{ text_data['Dale-Chall Readability Score'] }}</p>
+                                    <p class="subtitle">Dale-Chall<br>Readability Score</p>
+                                </article>
+                            </div>
+                            <div class="tile is-parent">
+                                <article
+                                    data-tooltip="The SMOG grade is a measure of readability that estimates the years of education needed to understand a piece of writing"
+                                    class="tile is-child box">
+                                    <p class="title">{{ text_data['The SMOG Index'] }}</p>
+                                    <p class="subtitle">The SMOG<br>Readability Index</p>
+                                </article>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="accordions">
+                        <article class="accordion is-active" style="margin-bottom: 15px;">
+                            <div class="accordion-header toggle">
+                                <p>1. Motivational Letter Text Analytics</p>
+                            </div>
+                            <div class="accordion-body">
+                                <div class="accordion-content">
+                                    <table class="table is-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Index</th>
+                                                <th>Parameter</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for element in text_data: %}
+                                                <tr>
+                                                    <td data-label="#">{{ loop.index }}</td>
+                                                    <td data-label="Document">{{ element }}</td>
+                                                    <td data-label="Uploaded">{{ text_data[element] }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="accordion" style="margin-bottom: 15px;">
+                            <div class="accordion-header toggle">
+                                <p>2. Motivational Letter Sentiment Analysis</p>
+                            </div>
+                            <div class="accordion-body">
+                                <div class="accordion-content">
+                                    <table class="table is-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Compound</th>
+                                                <th>Sentence</th>
+                                                <th>Neg</th>
+                                                <th>Neu</th>
+                                                <th>Pos</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for sentence in sentiment_data: %}
+                                                <tr>
+                                                    <td data-label="#">{{ loop.index }}</td>
+                                                    <td data-label="Compound">{{ sentence['compound']|string() }}</td>
+                                                    <td data-label="Sentence"
+                                                    class="has-tooltip-multiline has-tooltip-info has-tooltip-bottom"
+                                                    data-tooltip="{{ sentence['headline'] }}">
+                                                        {{ sentence['headline'][:80] }}
+                                                    </td>
+                                                    <td data-label="Neg">{{ sentence['neg']|string() }}</td>
+                                                    <td data-label="Neu">{{ sentence['neu']|string() }}</td>
+                                                    <td data-label="Pos">{{ sentence['pos']|string() }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="accordion" style="margin-bottom: 15px;">
+                            <div class="accordion-header toggle">
+                                <p>3. Motivational Letter Sentence Polarity Distribution</p>
+                            </div>
+                            <div class="accordion-body is-centered">
+                                <div class="accordion-content container is-centered center">
+                                    <img
+                                        src="{{ url_for('send_image', filename='polarity.png') }}"
+                                        max-width="640px"
+                                    />
+                                </div>
+                            </div>
+                        </article>
+                        <article class="accordion" style="margin-bottom: 15px;">
+                            <div class="accordion-header toggle">
+                                <p>4. Motivational Letter Words Frequency Distribution</p>
+                            </div>
+                            <div class="accordion-body is-centered">
+                                <div class="accordion-content container is-centered center">
+                                    <img
+                                        src="{{ url_for('send_image', filename='distribution.png') }}"
+                                        max-width="640px"
+                                    />
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+                {% else %}
+                    <h1>Your CV letter is still not uploaded. <a href="{{ url_for('upload_letter') }}">Upload here</a></h1>
+                {% endif %}
+                <center>
+                    <div class="column">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="column is-half notification is-{{ category }}" role="alert" style="opacity: 0.8"><strong>{{ message }}</strong></div>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </center>
+            </div>
+        </div>
+{% endblock %}

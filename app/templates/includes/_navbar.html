@@ -1,7 +1,7 @@
 <nav class="navbar has-background-info is-bold">
     <div class="navbar-brand">
-      <a class="navbar-item brand-text" href="/">
-        AI Interview Tool
+      <a class="navbar-item brand-text has-text-white" href="/">
+        <strong class="is-size-5">AI Interview Tool</strong>
       </a>
       <div class="navbar-burger burger" style="a.navbar-item { color: black; }" data-target="navMenu">
         <span></span>
@@ -11,10 +11,10 @@
     </div>
       <div id="navMenu" class="navbar-menu">
         <div class="navbar-start">
-          <a href="{{ url_for('documentation') }}" class="navbar-item">
+          <a href="{{ url_for('documentation') }}" class="navbar-item has-text-white">
             Documentation
           </a>
-          <a class="navbar-item" href="admin.html">
+          <a class="navbar-item has-text-white" href="admin.html">
             Payments
           </a>
         </div>
@@ -22,12 +22,12 @@
           <div class="navbar-item">
             <div class="buttons">
               <a class="button is-white" href="{{ url_for('homepage') }}">
-                <strong class="has-text-dark">Home</strong>
+                <strong>Home</strong>
               {% if current_user.is_authenticated %}
-              <a class="button is-primary" href="{{ url_for('dashboard') }}">
+              <a class="button is-white" href="{{ url_for('dashboard') }}">
                 <strong>Dashboard</strong>
               </a>
-                <a class="button is-dark" href="{{ url_for('logoutpage') }}">
+                <a class="button is-white" href="{{ url_for('logoutpage') }}">
                   <strong>Logout</strong>
                 </a>
               {% else %}

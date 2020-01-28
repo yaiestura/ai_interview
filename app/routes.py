@@ -1,10 +1,11 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, Response, send_from_directory
 from app import app
 from app import app, db, pwd
 from app.forms import RegForm, LoginForm
 from app.models import load_user, User, UserData, ResumeUploads, LetterUploads, VideoUploads, AudioUploads
-from app.utils.text_analysis import get_article_stats
-from app.utils.utils import allowed_file, allowed_filesize
+from app.utils.camera import VideoCamera
+from app.utils.text_analysis import cv_analysis
+from app.utils.utils import allowed_file, allowed_filesize, delete_document_from_db
 from flask_login import login_user, current_user, logout_user, login_required
 from werkzeug.utils import secure_filename
 import os
@@ -32,17 +33,31 @@ def documentation():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    if UserData.query.filter_by(user_id=current_user.get_id()).all():
-        print(UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first())
-    else:
-        pass
-    return render_template("admin.html")
+
+    query = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first()
+
+    def is_uploaded(query_type):
+        return 'No' if query_type == None else 'Yes'
+
+    admin_uploads_data = {
+        'is_resume_uploaded': is_uploaded(query.user_resume) if query else 'No',
+        'is_letter_uploaded': is_uploaded(query.user_letter) if query else 'No',
+        'is_video_uploaded': is_uploaded(query.user_video) if query else 'No',
+        'is_audio_uploaded': is_uploaded(query.user_audio) if query else 'No'
+    };
+
+    return render_template("admin.html", uploads=admin_uploads_data)
+
+
+@app.route('/profile/<username>')
+def profile(username):
+	return 'username is %s' % username
 
 
 # Authorization
 
 
-@app.route("/signup" , methods = ['GET' , 'POST'])
+@app.route("/signup", methods = ['GET' , 'POST'])
 def signuppage() :
     if current_user.is_authenticated :
         flash("You are already logged in." , "warning")
@@ -58,7 +73,7 @@ def signuppage() :
     return render_template("signup.html" , form = form)
 
 
-@app.route("/login" , methods = ['GET' , 'POST'])
+@app.route("/login", methods = ['GET' , 'POST'])
 def loginpage():
     if current_user.is_authenticated :
         flash("You are already logged in." , "warning")
@@ -84,7 +99,53 @@ def logoutpage():
     return redirect(url_for("homepage"))
 
 
+# Database Manipulations
+
+
+@app.route('/delete_file/<type>', methods = ['GET', 'POST'])
+@login_required
+def delete_file(type):
+    delete_document_from_db(type)
+    return show_uploads()
+
+
 # Uploads
+
+
+@app.route('/uploads', methods = ['GET', 'POST'])
+@login_required
+def uploads():
+    if request.method == "POST":
+        print(request.form['document'])
+
+    if request.method == "GET":
+        global show_uploads
+
+        def show_uploads():
+            query = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first()
+
+            def is_uploaded(query_type):
+                return 'No' if query_type == None else 'Yes'
+
+
+            uploads_data = (
+            {'type': 'Resume',
+            'path': query.user_resume if query else 'None',
+            'uploaded': is_uploaded(query.user_resume) if query else 'No' },
+            {'type': 'CV',
+            'path': query.user_letter if query else 'None',
+            'uploaded': is_uploaded(query.user_letter) if query else 'No' },
+            {'type': 'Video',
+            'path': query.user_video if query else 'None',
+            'uploaded': is_uploaded(query.user_video) if query else 'No' },
+            {'type': 'Audio',
+            'path': query.user_audio if query else 'None',
+            'uploaded': is_uploaded(query.user_audio) if query else 'No'  }
+            );
+
+            return render_template("dashboard/uploads.html", uploads=uploads_data)
+
+        return show_uploads()
 
 
 @app.route('/upload_resume', methods = ['GET', 'POST'])
@@ -273,14 +334,61 @@ def upload_audio():
 @app.route('/record_video', methods = ['GET', 'POST'])
 @login_required
 def record_video():
-    pass
+    if request.method == "POST":
+        pass
 
+    return render_template("dashboard/record_video.html")
+
+
+@app.route('/images/<path:filename>')
+def send_image(filename):
+
+    directory = os.path.join(
+        os.path.dirname(app.instance_path), f'app/userdata/{current_user.uname}/text_analytics/'
+    )
+
+    return send_from_directory(directory, filename, as_attachment=True)
+
+# Video
+
+
+@app.route('/video_feed', methods = ['GET', 'POST'])
+@login_required
+def video_feed():
+
+    def gen(camera):
+        while True:
+            frame = camera.get_frame()
+            yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+    return Response(gen(VideoCamera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 # AI Analytics
 
+@app.route("/letter_analysis", methods = ['GET'])
+@login_required
+def letter_analysis():
 
-@app.route("/text_stats", methods = ['GET'])
-def text_stats():
-    text = textract.process("letter.docx").decode('utf-8')
-    return get_article_stats(text)
+    directory = os.path.join(
+        os.path.dirname(app.instance_path), f'app/userdata/{current_user.uname}/text_analytics'
+    )
 
+    letter = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first().user_letter
+
+    if letter:
+        sentiment_data, text_data = cv_analysis(letter)
+        print(sentiment_data)
+
+        return render_template("assessment/motivational.html",
+        sentiment_data=sentiment_data, text_data=text_data, directory=directory)
+
+    else:
+        return render_template("assessment/motivational.html",
+        sentiment_data=None, text_data=None, directory=None)
+
+@app.route("/resume_analysis", methods = ['GET'])
+@login_required
+def resume_analysis():
+    return render_template("assessment/resume.html")

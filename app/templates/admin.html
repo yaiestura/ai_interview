@@ -22,8 +22,16 @@
                             <a>Assessment</a>
                             <ul>
                                 <li><a>Statistics</a></li>
-                                <li><a>Resume</a></li>
-                                <li><a>Motivational Letter</a></li>
+                                <li>
+                                    <a href="{{ url_for('resume_analysis') }}">
+                                      Resume
+                                    </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('letter_analysis') }}">
+                                    Motivational Letter
+                                  </a>
+                                </li>
                                 <li><a>VideoInterview</a></li>
                             </ul>
                         </li>
@@ -33,7 +41,9 @@
                     </p>
                     <ul class="menu-list">
                         <li>
-                            <a>My Uploads</a>
+                            <a href="{{ url_for('uploads') }}">
+                                My Uploads
+                            </a>
                             <ul>
                                 <li>
                                   <a href="{{ url_for('upload_resume') }}">
@@ -151,28 +161,43 @@
                                         <tbody>
                                             <tr>
                                                 <td width="5%"><i class="fa fa-bell-o"></i></td>
-                                                {% if condition %}
-                                                     <td>Lorum ipsum dolem aire</td>
-                                                     <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
+                                                {% if uploads["is_resume_uploaded"] == "Yes" %}
+                                                        <td>Your Resume has been successfully uploaded</td>
+                                                        <td class="level-right"><a class="button is-small is-primary" href="#">Examine</a></td>
                                                 {% else %}
-                                                     <td>Lorum ipsum dolem aire</td>
-                                                     <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
+                                                        <td>You can upload your Resume here</td>
+                                                        <td class="level-right"><a class="button is-small is-danger" href="{{ url_for('upload_resume') }}">Proceed</a></td>
                                                 {% endif %}
                                             </tr>
                                             <tr>
                                                 <td width="5%"><i class="fa fa-bell-o"></i></td>
-                                                {% if condition %}
-                                                     <td>Lorum ipsum dolem aire</td>
-                                                     <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
+                                                {% if uploads["is_letter_uploaded"] == "Yes" %}
+                                                        <td>Your CV letter has been successfully uploaded</td>
+                                                        <td class="level-right"><a class="button is-small is-primary" href="{{ url_for('letter_analysis') }}">Examine</a></td>
                                                 {% else %}
-                                                     <td>Lorum ipsum dolem aire</td>
-                                                     <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
+                                                        <td>You can upload your CV letter here</td>
+                                                        <td class="level-right"><a class="button is-small is-danger" href="{{ url_for('upload_letter') }}" >Proceed</a></td>
                                                 {% endif %}
                                             </tr>
                                             <tr>
                                                 <td width="5%"><i class="fa fa-bell-o"></i></td>
-                                                <td>Lorum ipsum dolem aire</td>
-                                                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
+                                                {% if uploads["is_video_uploaded"] == "Yes" %}
+                                                        <td>Your Video Interview has been successfully uploaded</td>
+                                                        <td class="level-right"><a class="button is-small is-primary" href="#">Examine</a></td>
+                                                {% else %}
+                                                        <td>You can upload your Video Interview here</td>
+                                                        <td class="level-right"><a class="button is-small is-danger" href="{{ url_for('upload_video') }}">Proceed</a></td>
+                                                {% endif %}
+                                            </tr>
+                                            <tr>
+                                                <td width="5%"><i class="fa fa-bell-o"></i></td>
+                                                {% if uploads["is_audio_uploaded"] == "Yes" %}
+                                                        <td>Your Audio Interview has been successfully uploaded</td>
+                                                        <td class="level-right"><a class="button is-small is-primary" href="#">Examine</a></td>
+                                                {% else %}
+                                                        <td>You can upload your Audio Interview here</td>
+                                                        <td class="level-right"><a class="button is-small is-danger" href="{{ url_for('upload_audio') }}" >Proceed</a></td>
+                                                {% endif %}
                                             </tr>
                                         </tbody>
                                     </table>

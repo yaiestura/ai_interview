@@ -2,9 +2,63 @@ from app import app
 from homer.analyzer import Article
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.probability import FreqDist
+from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 from flask import jsonify
+from flask_login import current_user
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 import textstat
+import textract
+import os
+import re
+import pprint
+
+
+def words_frequency_distr(tokenized_words, directory):
+
+    fdist = FreqDist(tokenized_words)
+    plt.figure(figsize=(10, 7))
+    plt.title('Fig.2 Motivational Letter Words Frequency Distribution')
+    fdist.plot(25, cumulative=False)
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    plt.savefig(os.path.join(directory, 'distribution.png'))
+    plt.clf()
+
+
+def sentences_sentiment_analysis(tokenized_text, directory):
+
+    sia = SIA()
+    results = []
+
+    for sentence in tokenized_text:
+        polarity_score = sia.polarity_scores(sentence)
+        polarity_score['headline'] = sentence
+        results.append(polarity_score)
+
+    df = pd.DataFrame.from_records(results)
+
+    df['label'] = 0
+    df.loc[df['compound'] > 0.2, 'label'] = 1
+    df.loc[df['compound'] < -0.2, 'label'] = -1
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    counts = df.label.value_counts(normalize=True) * 100
+
+    sns.barplot(x=counts.index, y=counts, ax=ax)
+
+    ax.set_xticklabels(['Negative', 'Neutral', 'Positive'])
+    ax.set_ylabel("Percentage")
+
+    plt.title('Fig.1 Motivational Letter Sentences Polarity Distribution')
+    plt.savefig(os.path.join(directory, 'polarity.png'))
+    plt.clf()
+
+    return results
 
 
 def sentiment_analysis(text):
@@ -16,21 +70,20 @@ def sentiment_analysis(text):
     tokenized_text = sent_tokenize(text)
     tokenized_words = word_tokenize(text)
 
-    fdist = FreqDist(tokenized_words)
-    fdist.plot(25, cumulative=False)
+    words_frequency_distr(tokenized_words, directory)
 
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    plt.savefig(os.path.join(directory, 'distrib.png'))
+    return sentences_sentiment_analysis(tokenized_text, directory)
 
 
 
-def get_article_stats(text):
+def cv_analysis(cv_letter):
 
+    text = textract.process(cv_letter).decode('utf-8')
     article = Article('Article name', 'Author', text)
-    sentiment_analysis(text)
-    data = {
+
+    sentiment_data = sentiment_analysis(text)
+
+    text_data = {
         'Reading time': str(article.reading_time) + ' mins',
         'Flesch Reading Ease': article.get_flesch_reading_score(),
         'Dale Chall Readability Score': article.get_dale_chall_reading_score(),
@@ -58,6 +111,6 @@ def get_article_stats(text):
         'Linsear Write Formula': textstat.linsear_write_formula(text),
         'The Fog Scale (Gunning FOG Formula)': textstat.gunning_fog(text),
         'Readability Consensus based upon all the above tests': textstat.text_standard(text)
-    }
+    };
 
-    return jsonify(data)
+    return sentiment_data, text_data

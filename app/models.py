@@ -9,7 +9,7 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     sno = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.DateTime, default=datetime.now)
+    time = db.Column(db.DateTime, default=datetime.now())
     uname = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
@@ -35,7 +35,7 @@ class UserData(db.Model):
     user_letter = db.Column(db.String(150), default=None, nullable=True)
     user_video = db.Column(db.String(150), default=None, nullable=True)
     user_audio = db.Column(db.String(150), default=None, nullable=True)
-    time = db.Column(db.DateTime, default=datetime.now)
+    time = db.Column(db.DateTime, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.sno'), nullable=False)
 
 
@@ -60,7 +60,7 @@ class LetterUploads(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.sno'), nullable=False)
 
     def __repr__(self):
-        return 'LetterUploads(%s, %s, %s)' % (self.is_letter_uploaded, self.is_letter_processed, self.user_id)
+        return f'LetterUploads({self.is_letter_uploaded}, {self.is_letter_processed}, {self.user_id})'
 
 class VideoUploads(db.Model):
     __tablename__ = 'videouploads'
@@ -70,7 +70,7 @@ class VideoUploads(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.sno'), nullable=False)
 
     def __repr__(self):
-        return 'VideoUploads(%s, %s, %s)' % (self.is_video_uploaded, self.is_video_processed, self.user_id)
+        return f'VideoUploads({self.is_video_uploaded}, {self.is_video_processed}, {self.user_id})'
 
 class AudioUploads(db.Model):
     __tablename__ = 'audiouploads'
@@ -80,4 +80,11 @@ class AudioUploads(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.sno'), nullable=False)
 
     def __repr__(self):
-        return 'AudioUploads(%s, %s, %s)' % (self.is_audio_uploaded, self.is_audio_processed, self.user_id)
+        return f'AudioUploads({self.is_audio_uploaded}, {self.is_audio_processed}, {self.user_id})'
+
+
+# class Statistics(db.Model):
+#     __tablename__ = 'statistics'
+
+#     def __repr__(self):
+#         pass
