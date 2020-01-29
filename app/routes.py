@@ -1,16 +1,25 @@
-from flask import render_template, flash, redirect, url_for, request, Response, send_from_directory
+from flask import render_template, flash, session, redirect, url_for, request, Response, send_from_directory, send_file
 from app import app
-from app import app, db, pwd
+from app import app, db, pwd, celery
 from app.forms import RegForm, LoginForm
-from app.models import load_user, User, UserData, ResumeUploads, LetterUploads, VideoUploads, AudioUploads
+from app.models import load_user, User, UserData, Statistics
 from app.utils.camera import VideoCamera
-from app.utils.text_analysis import cv_analysis
-from app.utils.utils import allowed_file, allowed_filesize, delete_document_from_db
+from app.utils.text_analysis import cv_analysis, audio_sentiment_analysis
+from app.utils.audio_analysis import transcribe_audio_to_text
+from app.utils.eye_tracking import eye_tracking
+from app.utils.head_tracking import head_movement_estimation
+from app.utils.audio_sentiment.sentiment import audio_emotion_analysis
+from app.utils.emotion_detection.emotion import video_emotion_detection
+from app.utils.generate_report import generate_report
+from app.utils.utils import allowed_file, allowed_filesize, delete_document_from_db, count_documents_uploaded
 from flask_login import login_user, current_user, logout_user, login_required
 from werkzeug.utils import secure_filename
+from collections import Counter
 import os
 import urllib.request
 import textract
+import requests
+import subprocess
 
 
 
@@ -35,9 +44,17 @@ def documentation():
 def dashboard():
 
     query = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first()
+    user_query = User.query.filter_by(sno=current_user.get_id()).first()
+    users_number = User.query.count()
+    documents = count_documents_uploaded(current_user.get_id())
 
     def is_uploaded(query_type):
         return 'No' if query_type == None else 'Yes'
+
+    def get_count(q):
+        count_q = q([func.count()]).order_by(None)
+        count = q.session.execute(count_q).scalar()
+        return count
 
     admin_uploads_data = {
         'is_resume_uploaded': is_uploaded(query.user_resume) if query else 'No',
@@ -46,7 +63,9 @@ def dashboard():
         'is_audio_uploaded': is_uploaded(query.user_audio) if query else 'No'
     };
 
-    return render_template("admin.html", uploads=admin_uploads_data)
+    return render_template("admin.html", uploads=admin_uploads_data,
+    time=str(user_query.time).split(".")[0].split(" ")[0],
+    documents=documents, users_number=users_number)
 
 
 @app.route('/profile/<username>')
@@ -94,6 +113,7 @@ def loginpage():
 @app.route("/logout")
 @login_required
 def logoutpage():
+    session.clear()
     logout_user()
     flash("Successfuly logged out." , "primary")
     return redirect(url_for("homepage"))
@@ -106,6 +126,7 @@ def logoutpage():
 @login_required
 def delete_file(type):
     delete_document_from_db(type)
+    flash(f"{type} was successfully deleted", "info")
     return show_uploads()
 
 
@@ -183,6 +204,10 @@ def upload_resume():
                     db.session.commit()
 
                     flash(f'Document uploaded successfully,\n{document.filename}', "info")
+
+                    resume_file = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first().user_resume
+
+                    resume_analyzer.delay(resume_file)
 
                     return redirect(request.url)
 
@@ -276,6 +301,18 @@ def upload_video():
 
                     flash(f'Video uploaded successfully,\n{document.filename}', "info")
 
+                    video_file = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first().user_video
+
+                    save_directory = os.path.join(
+                        os.path.dirname(app.instance_path), f'app/userdata/{current_user.uname}/video_analysis'
+                    )
+                    if not os.path.exists(save_directory):
+                        os.makedirs(save_directory)
+
+                    eyes_tracking.delay(video_file, save_directory)
+                    emotion_detection.delay(video_file, save_directory)
+                    head_detection.delay(video_file, save_directory)
+
                     return redirect(request.url)
 
                 else:
@@ -349,7 +386,7 @@ def send_image(filename):
 
     return send_from_directory(directory, filename, as_attachment=True)
 
-# Video
+# Utils
 
 
 @app.route('/video_feed', methods = ['GET', 'POST'])
@@ -365,7 +402,102 @@ def video_feed():
     return Response(gen(VideoCamera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
+
+@app.route('/stream_audio')
+def stream_audio():
+
+    audio = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first().user_audio
+
+    directory, filename = audio.rsplit('/',1)[0], audio.rsplit('/',1)[1]
+
+    return send_from_directory(directory, filename)
+
+
+@app.route('/stream_video/<filename>')
+def stream_video(filename):
+
+    directory = os.path.join(
+        os.path.dirname(app.instance_path), f'app/userdata/{current_user.uname}/video_analysis'
+    )
+    print(filename)
+
+    return send_from_directory(directory, filename)
+
+
+@app.route('/download_report')
+def download_report():
+
+    directory = os.path.join(
+        os.path.dirname(app.instance_path), f'app/userdata/{current_user.uname}/reports'
+    )
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    url = generate_report(current_user.uname)
+
+    return send_file(url, as_attachment=False, cache_timeout=0)
+
+
+#Celery Asynchronous Tasks
+
+
+@celery.task
+def eyes_tracking(video_file, save_directory):
+    return eye_tracking(video_file, save_directory)
+
+
+@celery.task
+def emotion_detection(video_file, save_directory):
+    return video_emotion_detection(video_file, save_directory)
+
+
+@celery.task
+def head_detection(video_file, save_directory):
+    return head_movement_estimation(video_file, save_directory)
+
+
+@celery.task
+def blinking_tracking(video_file):
+    subprocess.call(['python3', 'app/utils/detect_blinks.py',
+    '--shape-predictor', 'app/utils/shape_predictor_68_face_landmarks.dat',
+    '--video', video_file], shell=False)
+
+
+@celery.task
+def resume_analyzer(resume_path):
+    #python3 main.py --type fixed "path" --model_name model
+    subprocess.call(['python3', 'app/resume/main.py',
+    '--type', 'fixed', resume_path,
+    '--model_name', 'model'], shell=False)
+
+
 # AI Analytics
+
+
+@app.route("/resume_analysis", methods = ['GET'])
+@login_required
+def resume_analysis():
+
+    content_exists = True if os.path.exists("app/resume/res_data.txt") else False
+    score_exists = True if os.path.exists("app/resume/res_score.txt") else False
+    if content_exists:
+        with open("app/resume/res_data.txt", "r") as f:
+            content = f.read()
+    if score_exists:
+        with open("app/resume/res_score.txt", "r") as f:
+            score = f.read()
+
+    if content_exists and score_exists:
+
+        return render_template("assessment/resume.html",
+        content=content, score=score, content_exists=content_exists)
+
+    else:
+        return render_template("assessment/resume.html",
+        content=None, score=None, content_exists=None)
+
 
 @app.route("/letter_analysis", methods = ['GET'])
 @login_required
@@ -388,7 +520,98 @@ def letter_analysis():
         return render_template("assessment/motivational.html",
         sentiment_data=None, text_data=None, directory=None)
 
-@app.route("/resume_analysis", methods = ['GET'])
+
+@app.route("/audio_analysis", methods = ['GET'])
 @login_required
-def resume_analysis():
-    return render_template("assessment/resume.html")
+def audio_analysis():
+
+    directory = os.path.join(
+        os.path.dirname(app.instance_path), f'app/userdata/{current_user.uname}/text_analytics'
+    )
+
+    audio_file = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first().user_audio
+
+    if audio_file:
+        transcript = transcribe_audio_to_text(audio_file).title()
+
+        sentiment_data = audio_sentiment_analysis(transcript)
+        emotion_data = audio_emotion_analysis(audio_file)
+
+        return render_template("assessment/audio.html", transcript=transcript, sentiment=sentiment_data, emotion=emotion_data)
+
+    return render_template("assessment/audio.html", transcript=None, sentiment=None, emotion=None)
+
+
+@app.route("/video_analysis", methods = ['GET'])
+@login_required
+def video_analysis():
+
+    video_file = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first().user_video
+
+    eye_tracking = True if os.path.exists(os.path.join(
+        os.path.dirname(app.instance_path),
+        f'app/userdata/{current_user.uname}/video_analysis/output.webm'
+    )) else False
+    blink_tracking = True if os.path.exists(os.path.join(
+        os.path.dirname(app.instance_path),
+        f'app/userdata/{current_user.uname}/video_analysis/blink.webm'
+    )) else False
+    emotion_detection = True if os.path.exists(os.path.join(
+        os.path.dirname(app.instance_path),
+        f'app/userdata/{current_user.uname}/video_analysis/emotion.webm'
+    )) else False
+    head_detection = True if os.path.exists(os.path.join(
+        os.path.dirname(app.instance_path),
+        f'app/userdata/{current_user.uname}/video_analysis/head.webm'
+    )) else False
+
+
+    if video_file:
+        return render_template("assessment/video.html", video_file=video_file, eye_tracking=eye_tracking, emotion=emotion_detection, head=head_detection)
+    else:
+        return render_template("assessment/video.html", video_file=None, eye_tracking=None, emotion=None, head=None)
+
+
+@app.route('/statistics')
+def statistics():
+
+    query = Statistics.query.filter_by(user_id=current_user.get_id()).order_by(Statistics.sno.desc()).first()
+
+    blink_num = query.blink_count if query else None
+
+    if os.path.exists('app/utils/emotion_detection/emotions.txt'):
+        with open('app/utils/emotion_detection/emotions.txt') as f:
+            emotions = f.read().splitlines()
+
+        emotions_data = dict((x, "%.2f" % ((emotions.count(x) * 100.0) / len(emotions))) for x in set(emotions))
+
+    return render_template("assessment/statistics.html", emotions=emotions_data, blinks=blink_num)
+
+
+@app.route('/blinking_counter')
+def blinking_counter():
+
+    video_file = UserData.query.filter_by(user_id=current_user.get_id()).order_by(UserData.sno.desc()).first().user_video
+
+    if video_file:
+        if os.path.exists('app/utils/blinks.txt') and os.stat('app/utils/blinks.txt').st_size != 0:
+            with open('app/utils/blinks.txt') as f:
+                blinks = f.read().splitlines()
+
+            stats = Statistics(blink_count=blinks[-1], user_id=current_user.get_id())
+
+            db.session.add(stats)
+            db.session.commit()
+
+            return render_template("assessment/blink.html", blink=blinks[-1], video=True)
+
+        else:
+
+            blinking_tracking.delay(video_file)
+            flash("Blinking counter has finished working","info")
+
+            return render_template("assessment/blink.html", blink=None, video=True)
+
+    else:
+
+        return render_template("assessment/blink.html", blink=None, video=False)

@@ -1,0 +1,155 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/admin.css') }}"><link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
+<script type="text/javascript" src="{{ url_for('static', filename='js/file_upload.js') }}"></script>
+
+{% extends 'index.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="columns">
+            <div class="column is-3 ">
+                <aside class="menu is-hidden-mobile">
+                    <p class="menu-label">
+                        General
+                    </p>
+                    <ul class="menu-list">
+                        <li>
+                          <a href="{{ url_for('dashboard') }}">
+                            Dashboard
+                          </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('download_report')}}" target="_blank">
+                                Download report
+                            </a>
+                        </li>
+                        <li>
+                            <a>Assessment</a>
+                            <ul>
+                                <li>
+                                    <a href="{{ url_for('statistics') }}">
+                                        Statistics
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('resume_analysis') }}">
+                                      Resume
+                                    </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('letter_analysis') }}">
+                                    Motivational Letter
+                                  </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('video_analysis') }}">
+                                      Video Interview
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('audio_analysis') }}">
+                                      Audio Analysis
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="is-active" href="{{ url_for('blinking_counter') }}">
+                                      Blinking Counter
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="menu-label">
+                        Uploads
+                    </p>
+                    <ul class="menu-list">
+                        <li>
+                            <a href="{{ url_for('uploads') }}">
+                                My Uploads
+                            </a>
+                            <ul>
+                                <li>
+                                  <a href="{{ url_for('upload_resume') }}">
+                                    Upload a Resume
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('upload_letter') }}">
+                                    Upload a Cover Letter
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('upload_video') }}">
+                                    Upload a Video
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('upload_audio') }}">
+                                    Upload an Audio
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="{{ url_for('record_video') }}">
+                                    Record a Video
+                                  </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="menu-label">
+                        Miscellaneous
+                    </p>
+                    <ul class="menu-list">
+                        <li><a>Open in Telegram <span>(in dev)</span></a></li>
+                    </ul>
+                </aside>
+            </div>
+            <div class="column is-9">
+                <nav class="breadcrumb" aria-label="breadcrumbs">
+                    <ul>
+                        <li>
+                            <a href="/">
+                                <span class="icon is-small">
+                                    <i class="fas fa-home" aria-hidden="true"></i>
+                                </span>
+                                AI Interview Tool
+                            </a>
+                        </li>
+                        <li class="is-active">
+                            <a href="/" aria-current="page">
+                                <span class="icon is-small">
+                                    <i class="fas fa-envelope-open-text" aria-hidden="true"></i>
+                                </span>
+                                Blinking Counter
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <section class="hero is-info welcome is-small">
+                    <div class="hero-body">
+                        <div class="container">
+                            <h1 class="title">
+                                Hello, {{ current_user.uname }}.
+                            </h1>
+                            <h2 class="subtitle">
+                                I hope you are having a great day!
+                            </h2>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+                <section>
+                    <h1 class="is-size-5" style="margin-bottom: 20px;">Blinking Counter Analysis:</h1>
+                    {% if video %}
+                        {% if blink %}
+                            <p>The number of blinks in uploaded video: {{ blink }} blinks</p>
+                        {% else %}
+                            <p>The number of blinks is determining...</p>
+                        {% endif %}
+                    {% else %}
+                        <h1>Your Video Interview is still not uploaded. <a href="{{ url_for('upload_video') }}">Upload here</a></h1>
+                    {% endif %}
+                </section>
+            </div>
+        </div>
+{% endblock %}

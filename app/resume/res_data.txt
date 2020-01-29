@@ -1,0 +1,33 @@
+Name: Resume (from filename)
+Email: patsvetov@edu.hse.ru
+Number: 977 971 35 52
+City/Country: 
+
+Work Experience:
+0 months
+ - Flask, REST API
+ - ES6
+ - Bootstrap
+ - Materialize
+ - ONVIF
+ - Excel, STATA
+ - Illustrator
+ - SKILLS
+ - INTERESTS
+
+Education:
+2 years 0 months
+ - 5.0 IT class with in-depth study of specialized subjects
+ - EDUC ATION PT JavaScript & p5.js Developer / University Research
+ - Development of algorithms for mathematical modeling of dynamic fractal objects for
+ - scienti�c research
+ -  Fractal trees and objects modelling using native JS and p5.js library, and overview of possible
+ - appliances January 2018 - May 2018
+ - 2017-2019 Minor 'Applied Economics' / Higher School Of Economics
+ - Microeconomics, Macroeconomics, Competitions, Econometrics
+ - HOBBIES  Music  Travelling  Learning English
+ -  Football  Movies in English
+ -  History, Politics
+
+Skills:
+Flask, Sql, P, Design, Research, Machine learning, C, Electronics, Python, Economics, Video, Api, Reportlab, Modeling, Css, C++, Html, Linux, Javascript, Pr, Excel, Rest, English, Illustrator, Compliance, Hardware, Algorithms, Js

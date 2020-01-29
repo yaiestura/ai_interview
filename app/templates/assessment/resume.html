@@ -19,11 +19,19 @@
                             Dashboard
                           </a>
                         </li>
-                        <li><a>Download report</a></li>
+                        <li>
+                            <a href="{{url_for('download_report')}}" target="_blank">
+                                Download report
+                            </a>
+                        </li>
                         <li>
                             <a>Assessment</a>
                             <ul>
-                                <li><a>Statistics</a></li>
+                                <li>
+                                    <a href="{{ url_for('statistics') }}">
+                                        Statistics
+                                    </a>
+                                </li>
                                 <li>
                                     <a class="is-active" href="{{ url_for('resume_analysis') }}">
                                       Resume
@@ -34,7 +42,21 @@
                                     Motivational Letter
                                   </a>
                                 </li>
-                                <li><a>VideoInterview</a></li>
+                                <li>
+                                    <a href="{{ url_for('video_analysis') }}">
+                                      Video Interview
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('audio_analysis') }}">
+                                      Audio Analysis
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('blinking_counter') }}">
+                                      Blinking Counter
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -74,13 +96,12 @@
                                 </li>
                             </ul>
                         </li>
-                        <li><a>Invitations</a></li>
                     </ul>
                     <p class="menu-label">
                         Miscellaneous
                     </p>
                     <ul class="menu-list">
-                        <li><a>Open in Telegram</a></li>
+                        <li><a>Open in Telegram <span>(in dev)</span></a></li>
                     </ul>
                 </aside>
             </div>
@@ -118,18 +139,14 @@
                     </div>
                 </section>
                 <hr>
-                <h1>Your Resume is still not uploaded. <a href="{{ url_for('upload_resume') }}">Upload here</a></h1>
-                <center>
-                    <div class="column">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                            <div class="column is-half notification is-{{ category }}" role="alert" style="opacity: 0.8"><strong>{{ message }}</strong></div>
-                            {% endfor %}
-                        {% endif %}
-                        {% endwith %}
-                    </div>
-                </center>
+                <h1 class="is-size-5" style="margin-bottom:20px;">AI Resume Assessment:</h1>
+                {% if content_exists %}
+                    <pre style="margin-bottom:20px;">{{ score }}</pre>
+                    <h1 class="is-size-5" style="margin-bottom:20px;">A Brief Summary for HR:</h1>
+                    <pre>{{ content }}</pre>
+                {% else %}
+                    <h1>Your Resume is still not uploaded. <a href="{{ url_for('upload_resume') }}">Upload here</a></h1>
+                {% endif %}
             </div>
         </div>
 {% endblock %}

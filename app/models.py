@@ -14,10 +14,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     userdata = db.relationship('UserData', backref='user', lazy=True)
-    resume_uploads = db.relationship('ResumeUploads', backref='user', lazy=True)
-    letter_uploads = db.relationship('LetterUploads', backref='user', lazy=True)
-    video_uploads = db.relationship('VideoUploads', backref='user', lazy=True)
-    audio_uploads = db.relationship('AudioUploads', backref='user', lazy=True)
+    statistics = db.relationship('Statistics', backref='user', lazy=True)
+
 
     def get_id(self):
         try:
@@ -42,49 +40,12 @@ class UserData(db.Model):
     def __repr__(self):
         return  'UserData(%s, %s, %s, %s, %s, %s)' % (self.user_resume, self.user_letter, self.user_video, self.user_audio, self.time, self.user_id)
 
-class ResumeUploads(db.Model):
-    __tablename__ = 'resumeuploads'
+
+class Statistics(db.Model):
+    __tablename__ = 'statistics'
     sno = db.Column(db.Integer, primary_key=True)
-    is_resume_uploaded = db.Column(db.Boolean, default=False, nullable=True)
-    is_resume_processed = db.Column(db.Boolean, default=False, nullable=True)
+    blink_count = db.Column(db.Integer, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.sno'), nullable=False)
 
     def __repr__(self):
-        return 'ResumeUploads(%s, %s, %s)' % (self.is_resume_uploaded, self.is_resume_processed, self.user_id)
-
-class LetterUploads(db.Model):
-    __tablename__ = 'letteruploads'
-    sno = db.Column(db.Integer, primary_key=True)
-    is_letter_uploaded = db.Column(db.Boolean, default=False, nullable=True)
-    is_letter_processed = db.Column(db.Boolean, default=False, nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.sno'), nullable=False)
-
-    def __repr__(self):
-        return f'LetterUploads({self.is_letter_uploaded}, {self.is_letter_processed}, {self.user_id})'
-
-class VideoUploads(db.Model):
-    __tablename__ = 'videouploads'
-    sno = db.Column(db.Integer, primary_key=True)
-    is_video_uploaded = db.Column(db.Boolean, default=False, nullable=True)
-    is_video_processed = db.Column(db.Boolean, default=False, nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.sno'), nullable=False)
-
-    def __repr__(self):
-        return f'VideoUploads({self.is_video_uploaded}, {self.is_video_processed}, {self.user_id})'
-
-class AudioUploads(db.Model):
-    __tablename__ = 'audiouploads'
-    sno = db.Column(db.Integer, primary_key=True)
-    is_audio_uploaded = db.Column(db.Boolean, default=False, nullable=True)
-    is_audio_processed = db.Column(db.Boolean, default=False, nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.sno'), nullable=False)
-
-    def __repr__(self):
-        return f'AudioUploads({self.is_audio_uploaded}, {self.is_audio_processed}, {self.user_id})'
-
-
-# class Statistics(db.Model):
-#     __tablename__ = 'statistics'
-
-#     def __repr__(self):
-#         pass
+        return  'Statistics(%s, %s, %s)' % (self.sno, self.blink_count, self.user_id)

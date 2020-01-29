@@ -75,6 +75,20 @@ def sentiment_analysis(text):
     return sentences_sentiment_analysis(tokenized_text, directory)
 
 
+def audio_sentiment_analysis(text):
+
+    sia = SIA()
+    results = []
+
+    tokenized_text = sent_tokenize(text)
+
+    for sentence in tokenized_text:
+        polarity_score = sia.polarity_scores(sentence)
+        polarity_score['headline'] = sentence
+        results.append(polarity_score)
+    return results
+
+
 
 def cv_analysis(cv_letter):
 

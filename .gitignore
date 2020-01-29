@@ -1,5 +1,11 @@
 venv/
 .vscode/
+lib/dlib/__pycache__/
 app/__pycache__/
+app/userdata/
+app/utils/__pycache__/
+app/utils/audio_sentiment/__pycache__/
+app/utils/emotion_detection/__pycache__/
+app/utils/gaze_tracking/__pycache__/
 app/__init__.pyc
 app/site.db

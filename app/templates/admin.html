@@ -17,11 +17,19 @@
                             Dashboard
                           </a>
                         </li>
-                        <li><a>Download report</a></li>
+                        <li>
+                            <a href="{{url_for('download_report')}}" target="_blank">
+                                Download report
+                            </a>
+                        </li>
                         <li>
                             <a>Assessment</a>
                             <ul>
-                                <li><a>Statistics</a></li>
+                                <li>
+                                    <a href="{{ url_for('statistics') }}">
+                                        Statistics
+                                    </a>
+                                </li>
                                 <li>
                                     <a href="{{ url_for('resume_analysis') }}">
                                       Resume
@@ -32,7 +40,21 @@
                                     Motivational Letter
                                   </a>
                                 </li>
-                                <li><a>VideoInterview</a></li>
+                                <li>
+                                    <a href="{{ url_for('video_analysis') }}">
+                                      Video Interview
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('audio_analysis') }}">
+                                      Audio Analysis
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('blinking_counter') }}">
+                                      Blinking Counter
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -69,15 +91,15 @@
                                   <a href="{{ url_for('record_video') }}">
                                     Record a Video
                                   </a>
-                                </li>                            </ul>
+                                </li>
+                            </ul>
                         </li>
-                        <li><a>Invitations</a></li>
                     </ul>
                     <p class="menu-label">
                         Miscellaneous
                     </p>
                     <ul class="menu-list">
-                        <li><a>Open in Telegram</a></li>
+                        <li><a href="https://core.telegram.org/bots" target="_blank">Open in Telegram <span>(in dev)</span></a></li>
                     </ul>
                 </aside>
             </div>
@@ -118,42 +140,42 @@
                     <div class="tile is-ancestor has-text-centered">
                         <div class="tile is-parent">
                             <article class="tile is-child box">
-                                <p class="title">439k</p>
-                                <p class="subtitle">Users</p>
+                                <p class="title">{{ time }}</p>
+                                <p class="subtitle">Registered<br>from</p>
                             </article>
                         </div>
                         <div class="tile is-parent">
                             <article class="tile is-child box">
-                                <p class="title">59k</p>
-                                <p class="subtitle">Products</p>
+                                <p class="title">{{ documents }}</p>
+                                <p class="subtitle">Documents uploaded</p>
                             </article>
                         </div>
                         <div class="tile is-parent">
                             <article class="tile is-child box">
-                                <p class="title">3.4k</p>
-                                <p class="subtitle">Open Orders</p>
+                                <p class="title">{{ users_number }}</p>
+                                <p class="subtitle">Active<br>users</p>
                             </article>
                         </div>
                         <div class="tile is-parent">
                             <article class="tile is-child box">
-                                <p class="title">19</p>
-                                <p class="subtitle">Exceptions</p>
+                                <p class="title">5</p>
+                                <p class="subtitle">Core<br>functions</p>
                             </article>
                         </div>
                     </div>
                 </section>
                 <div class="columns">
-                    <div class="column is-6">
-                        <div class="card events-card">
+                    <div class="column is-7">
+                        <div class="card">
                             <header class="card-header">
                                 <p class="card-header-title">
                                     Events
                                 </p>
                                 <a href="#" class="card-header-icon" aria-label="more options">
-                <span class="icon">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                </span>
-                </a>
+                                    <span class="icon">
+                                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                    </span>
+                                </a>
                             </header>
                             <div class="card-table">
                                 <div class="content">
@@ -162,8 +184,8 @@
                                             <tr>
                                                 <td width="5%"><i class="fa fa-bell-o"></i></td>
                                                 {% if uploads["is_resume_uploaded"] == "Yes" %}
-                                                        <td>Your Resume has been successfully uploaded</td>
-                                                        <td class="level-right"><a class="button is-small is-primary" href="#">Examine</a></td>
+                                                        <td>Your Resume is successfully uploaded</td>
+                                                        <td class="level-right"><a class="button is-small is-primary" href="{{ url_for('resume_analysis') }}">Examine</a></td>
                                                 {% else %}
                                                         <td>You can upload your Resume here</td>
                                                         <td class="level-right"><a class="button is-small is-danger" href="{{ url_for('upload_resume') }}">Proceed</a></td>
@@ -172,7 +194,7 @@
                                             <tr>
                                                 <td width="5%"><i class="fa fa-bell-o"></i></td>
                                                 {% if uploads["is_letter_uploaded"] == "Yes" %}
-                                                        <td>Your CV letter has been successfully uploaded</td>
+                                                        <td>Your CV letter is successfully uploaded</td>
                                                         <td class="level-right"><a class="button is-small is-primary" href="{{ url_for('letter_analysis') }}">Examine</a></td>
                                                 {% else %}
                                                         <td>You can upload your CV letter here</td>
@@ -182,8 +204,8 @@
                                             <tr>
                                                 <td width="5%"><i class="fa fa-bell-o"></i></td>
                                                 {% if uploads["is_video_uploaded"] == "Yes" %}
-                                                        <td>Your Video Interview has been successfully uploaded</td>
-                                                        <td class="level-right"><a class="button is-small is-primary" href="#">Examine</a></td>
+                                                        <td>Your Video Interview is successfully uploaded</td>
+                                                        <td class="level-right"><a class="button is-small is-primary" href="{{ url_for('video_analysis') }}">Examine</a></td>
                                                 {% else %}
                                                         <td>You can upload your Video Interview here</td>
                                                         <td class="level-right"><a class="button is-small is-danger" href="{{ url_for('upload_video') }}">Proceed</a></td>
@@ -192,8 +214,8 @@
                                             <tr>
                                                 <td width="5%"><i class="fa fa-bell-o"></i></td>
                                                 {% if uploads["is_audio_uploaded"] == "Yes" %}
-                                                        <td>Your Audio Interview has been successfully uploaded</td>
-                                                        <td class="level-right"><a class="button is-small is-primary" href="#">Examine</a></td>
+                                                        <td>Your Audio Interview is successfully uploaded</td>
+                                                        <td class="level-right"><a class="button is-small is-primary" href="{{ url_for('audio_analysis') }}">Examine</a></td>
                                                 {% else %}
                                                         <td>You can upload your Audio Interview here</td>
                                                         <td class="level-right"><a class="button is-small is-danger" href="{{ url_for('upload_audio') }}" >Proceed</a></td>
@@ -208,56 +230,51 @@
                             </footer>
                         </div>
                     </div>
-                    <div class="column is-6">
+                    <div class="column is-5 is-vcentered">
                         <div class="card">
                             <header class="card-header">
                                 <p class="card-header-title">
-                                    Inventory Search
+                                    Useful Websites
                                 </p>
-                                <a href="#" class="card-header-icon" aria-label="more options">
-                <span class="icon">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                </span>
-                </a>
                             </header>
-                            <div class="card-content">
-                                <div class="content">
-                                    <div class="control has-icons-left has-icons-right">
-                                        <input class="input is-large" type="text" placeholder="">
-                                        <span class="icon is-medium is-left">
-                    <i class="fa fa-search"></i>
-                    </span>
-                                        <span class="icon is-medium is-right">
-                    <i class="fa fa-check"></i>
-                    </span>
-                                    </div>
+                            <div class="card-table is-vcentered">
+                                <div class="content is-vcentered">
+                                    <table class="table is-fullwidth is-vcentered">
+                                        <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Find a job: HeadHunter</td>
+                                                <td><a class="has-text-primary" href="https://hh.ru/">Proceed</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>Find a job: Indeed.com</td>
+                                                <td><a class="has-text-primary" href="https://www.indeed.com/">Proceed</a></td>
+                                            </tr>
+                                                <td>3</td>
+                                                <td>Understanding Body Language</td>
+                                                <td>
+                                                    <a class="has-text-primary" href="https://www.verywellmind.com/understand-body-language-and-facial-expressions-4147228">
+                                                        Proceed
+                                                    </a>
+                                                </td>
+                                            <tr>
+                                                <td>4</td>
+                                                <td>Linkedin: professional community</td>
+                                                <td><a class="has-text-primary" href="https://www.linkedin.com/">Proceed</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>5</td>
+                                                <td>AI Pre-Hire Assessment</td>
+                                                <td><a class="has-text-primary" href="https://www.hirevue.com/">Proceed</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card">
-                            <header class="card-header">
-                                <p class="card-header-title">
-                                    User Search
-                                </p>
-                                <a href="#" class="card-header-icon" aria-label="more options">
-                <span class="icon">
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                </span>
-                </a>
-                            </header>
-                            <div class="card-content">
-                                <div class="content">
-                                    <div class="control has-icons-left has-icons-right">
-                                        <input class="input is-large" type="text" placeholder="">
-                                        <span class="icon is-medium is-left">
-                    <i class="fa fa-search"></i>
-                    </span>
-                                        <span class="icon is-medium is-right">
-                    <i class="fa fa-check"></i>
-                    </span>
-                                    </div>
-                                </div>
-                            </div>
+                            <footer class="card-footer">
+                                <p href="#" class="card-footer-item">2020</p>
+                            </footer>
                         </div>
                     </div>
                 </div>

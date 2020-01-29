@@ -18,11 +18,19 @@
                             Dashboard
                           </a>
                         </li>
-                        <li><a>Download report</a></li>
+                        <li>
+                            <a href="{{url_for('download_report')}}" target="_blank">
+                                Download report
+                            </a>
+                        </li>
                         <li>
                             <a>Assessment</a>
                             <ul>
-                                <li><a>Statistics</a></li>
+                                <li>
+                                    <a href="{{ url_for('statistics') }}">
+                                        Statistics
+                                    </a>
+                                </li>
                                 <li>
                                     <a href="{{ url_for('resume_analysis') }}">
                                       Resume
@@ -33,7 +41,21 @@
                                     Motivational Letter
                                   </a>
                                 </li>
-                                <li><a>VideoInterview</a></li>
+                                <li>
+                                    <a href="{{ url_for('video_analysis') }}">
+                                      Video Interview
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('audio_analysis') }}">
+                                      Audio Analysis
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('blinking_counter') }}">
+                                      Blinking Counter
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -70,15 +92,15 @@
                                   <a href="{{ url_for('record_video') }}">
                                     Record a Video
                                   </a>
-                                </li>                            </ul>
+                                </li>
+                            </ul>
                         </li>
-                        <li><a>Invitations</a></li>
                     </ul>
                     <p class="menu-label">
                         Miscellaneous
                     </p>
                     <ul class="menu-list">
-                        <li><a>Open in Telegram</a></li>
+                        <li><a>Open in Telegram <span>(in dev)</span></a></li>
                     </ul>
                 </aside>
             </div>
@@ -129,17 +151,6 @@
                         </button>
                     </form>
                 </section>
-                <center>
-                    <div class="column">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                            <div class="column is-half notification is-{{ category }}" role="alert" style="opacity: 0.8"><strong>{{ message }}</strong></div>
-                            {% endfor %}
-                        {% endif %}
-                        {% endwith %}
-                    </div>
-                </center>
             </div>
         </div>
 {% endblock %}
