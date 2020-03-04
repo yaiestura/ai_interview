@@ -1,33 +1,30 @@
-Name: Resume (from filename)
-Email: patsvetov@edu.hse.ru
-Number: 977 971 35 52
-City/Country: 
+Name: Bloomberg Thomas Reuters
+Email: shaza.pyw@gmail.com
+Number: +852 6276 0308
+City/Country: Hong Kong
 
 Work Experience:
-0 months
- - Flask, REST API
- - ES6
- - Bootstrap
- - Materialize
- - ONVIF
- - Excel, STATA
- - Illustrator
- - SKILLS
- - INTERESTS
+7 years 10 months
+ - VMS Investment Group Limited Hong Kong
+ - Fund Accountant Jun 2016 present
+ - Tak Lee Company Limited Hong Kong
+ - Assistant Merchandiser Aug 2014 Apr 2016
+ - HSBC Trustee Limited Hong Kong
+ - Global Trust Account (Contract) Oct 2013 Apr 2014
+ - HLB Hodgson Impey Cheng Limited, CPA Hong Kong
+ - Audit Associate I Sep 2011 May 2013
+ - Mandarin, English, Simplified & Traditional Cantonese
 
 Education:
-2 years 0 months
- - 5.0 IT class with in-depth study of specialized subjects
- - EDUC ATION PT JavaScript & p5.js Developer / University Research
- - Development of algorithms for mathematical modeling of dynamic fractal objects for
- - scienti�c research
- -  Fractal trees and objects modelling using native JS and p5.js library, and overview of possible
- - appliances January 2018 - May 2018
- - 2017-2019 Minor 'Applied Economics' / Higher School Of Economics
- - Microeconomics, Macroeconomics, Competitions, Econometrics
- - HOBBIES  Music  Travelling  Learning English
- -  Football  Movies in English
- -  History, Politics
+7 years 0 months
+ - HKICPA Registered Student Member Hong Kong, Jan 2013 present
+ - University of Durham Durham City, United Kingdom
+ - Bachelor of Arts in Accounting and Finance Jun 2011
+ - The response of stock return to monetary policy change. A survey. Apr 2011
+ - Brentwood School Essex, United Kingdom
+ - A-levels & GSCE Jun 2008 & Jun 2006
+ - Economics, Mathematics, Psychology, Chemistry and Chinese
+ - Business Studies, English, Mathematics, Triple Science, Religious Studies, Food Technology and Chinese
 
 Skills:
-Flask, Sql, P, Design, Research, Machine learning, C, Electronics, Python, Economics, Video, Api, Reportlab, Modeling, Css, C++, Html, Linux, Javascript, Pr, Excel, Rest, English, Illustrator, Compliance, Hardware, Algorithms, Js
+Economics, Distribution, Updates, Statistics, Erp, English, Analysis, Aviation, Workflow, Psychology, Word, Powerpoint, Audit, Transactions, Reports, Design, P, Testing, Accounting, Process, R, Sap, Access, System, Reconciliation, Pivot, Investigation, Compliance, Chemistry, Financial statements, Finance, Mathematics, Spreadsheets, Legal

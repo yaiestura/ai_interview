@@ -78,15 +78,23 @@ def profile(username):
 
 @app.route("/signup", methods = ['GET' , 'POST'])
 def signuppage() :
+    # If user is already logged in, flash a notification
+    # and redirect him to home page
     if current_user.is_authenticated :
         flash("You are already logged in." , "warning")
         return redirect(url_for("homepage"))
+
+    # Create an authentication form for sign up
     form = RegForm(request.form)
+    # Recieve data from a browser form and validate the data
     if request.method == "POST" and form.validate():
+        # Hash the password to store in database
         hashed = pwd.generate_password_hash(form.password.data).decode('utf-8')
+        # Save a new User and his credentials into the database
         form_data = User(uname=form.uname.data, email=form.email.data, password=hashed)
         db.session.add(form_data)
         db.session.commit()
+        # Account is created, and user redirected to login page
         flash("Account created for %s!" % (form.uname.data), "primary")
         return redirect(url_for("loginpage"))
     return render_template("signup.html" , form = form)

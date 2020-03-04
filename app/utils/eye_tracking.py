@@ -55,5 +55,3 @@ def eye_tracking(video_file, save_directory):
         cv2.destroyAllWindows()
         output.release()
         pass
-
-

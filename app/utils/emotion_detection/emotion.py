@@ -33,7 +33,7 @@ def plot_model_history(model_history):
 
 def video_emotion_detection(video_file, save_directory):
 
-    # Create the model
+    # Create the model, define layers
     model = tf.keras.models.Sequential()
 
     model.add(tf.keras.layers.Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
@@ -55,15 +55,16 @@ def video_emotion_detection(video_file, save_directory):
 
     model.load_weights('app/utils/emotion_detection/model.h5')
 
-    # prevents openCL usage and unnecessary logging messages
+    # Prevent openCL usage and unnecessary logging messages
     cv2.ocl.setUseOpenCL(False)
 
-    # dictionary which assigns each label an emotion (alphabetical order)
+    # Dictionary which assigns each label an emotion (alphabetical order)
     emotion_dict = {0: "Angry", 1: "Disgusted", 2: "Fearful", 3: "Happy", 4: "Neutral", 5: "Sad", 6: "Surprised"}
 
-    # start the video feed
+    # Start the video capture
     cap = cv2.VideoCapture(video_file)
 
+    # Define the width and height
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
 
@@ -71,32 +72,41 @@ def video_emotion_detection(video_file, save_directory):
     fourcc = cv2.VideoWriter_fourcc('V', 'P', '8', '0')
     output = cv2.VideoWriter(os.path.join(save_directory, 'emotion.webm'), fourcc, 25, (frame_width, frame_height))
 
+    # Define and open a file to save emotion statistics
     f = open("app/utils/emotion_detection/emotions.txt", "a+")
 
     while True:
-        # Find haar cascade to draw bounding box around face
-        ret, frame = cap.read()
 
+        # Read a single frame from a stream
+        ret, frame = cap.read()
+        # Find haar cascade to draw bounding box around face
         facecasc = cv2.CascadeClassifier('app/utils/emotion_detection/haarcascade_frontalface_default.xml')
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = facecasc.detectMultiScale(gray,scaleFactor=1.3, minNeighbors=5)
+        faces = facecasc.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5)
 
         for (x, y, w, h) in faces:
             cv2.rectangle(frame, (x, y-50), (x+w, y+h+10), (255, 0, 0), 2)
             roi_gray = gray[y:y + h, x:x + w]
             cropped_img = np.expand_dims(np.expand_dims(cv2.resize(roi_gray, (48, 48)), -1), 0)
+            # Predict an emotion based on a face cascade
             prediction = model.predict(cropped_img)
             maxindex = int(np.argmax(prediction))
+            # Output prediction text to window
             cv2.putText(frame, emotion_dict[maxindex], (x+20, y-60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+            # Save a prediicted emotion to a file
             f.write("%s\n" % (emotion_dict[maxindex]))
 
+        # Show an OpenCV window and save a frame to a video output
         cv2.imshow('Video', cv2.resize(frame,(1600,960),interpolation = cv2.INTER_CUBIC))
         output.write(frame)
+        # If "Q" is pressed, then exit
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    # Close capture and save devices
     cap.release()
     output.release()
+    # Destroy a Window Object
     cv2.destroyAllWindows()
+    # Close a file
     f.close()
-

@@ -15,6 +15,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle as PS
 from reportlab.platypus.flowables import TopPadder
 from reportlab.platypus.tableofcontents import TableOfContents
 from reportlab.lib.units import cm, mm, inch
+import PIL
 
 class PageNumCanvas(canvas.Canvas):
 
@@ -98,6 +99,8 @@ def generate_report(username):
 
 
     Report = []
+    
+    # Title
 
     logo = Image('app/utils/hse_logo.jpeg', 1 * inch, 1 * inch)
     Report.append(logo)
@@ -122,6 +125,24 @@ def generate_report(username):
 
     styleN = styles['Normal']
     styleN.wordWrap = 'CJK'
+
+    # Resume
+    Report.append(Paragraph('Resume Analysis', centered_bold))
+
+    Report.append(PageBreak())
+
+    # CV
+    Report.append(Paragraph('Motivational Letter Analysis', centered_bold))
+
+
+    # Audio
+    Report.append(Paragraph('Audio Analysis', centered_bold))
+
+
+    Report.append(PageBreak())
+
+    # Statistics
+    Report.append(Paragraph('Statistics Analysis', centered_bold))
 
     # content_exists = True if os.path.exists("app/resume/res_data.txt") else False
     # score_exists = True if os.path.exists("app/resume/res_score.txt") else False
