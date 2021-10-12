@@ -72,7 +72,7 @@ numba==0.47.0
 numpy==1.18.1
 oauthlib==3.1.0
 olefile==0.46
-opencv-python==4.1.2.30
+opencv-python==4.2.0.32
 opt-einsum==3.1.0
 pandas==0.25.3
 pdfminer.six==20181108
